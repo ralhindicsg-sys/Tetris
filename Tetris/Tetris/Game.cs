@@ -322,7 +322,11 @@ namespace Tetris
                 }
 
                 if (key == ConsoleKey.P) paused = !paused;
-                if (key == ConsoleKey.Q) Environment.Exit(0);
+                if (key == ConsoleKey.Escape) {
+                     PlayerManager.SaveScore(score);
+                     Console.Clear();
+                     MainMenu();
+                 }
             }
         }
 
