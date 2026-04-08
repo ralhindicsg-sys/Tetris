@@ -280,6 +280,7 @@ namespace Tetris
             }
 
             PlayerManager.SaveScore(score);
+            Console.Clear();
             MainMenu();
         }
 
@@ -323,10 +324,12 @@ namespace Tetris
 
                 if (key == ConsoleKey.P) paused = !paused;
                 if (key == ConsoleKey.Escape) {
-                     PlayerManager.SaveScore(score);
-                     Console.Clear();
-                     MainMenu();
-                 }
+                    PlayerManager.SaveScore(score);
+                    Console.Clear();
+                    Console.CursorVisible = false;
+                    MainMenu();
+
+                }
             }
         }
 

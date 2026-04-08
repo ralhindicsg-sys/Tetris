@@ -45,6 +45,7 @@
                     if (key.Key == ConsoleKey.Escape)
                     {
                         CurrentPlayer = null;
+                        Console.Clear();
                         return;
                     }
 
@@ -117,7 +118,9 @@
                 if (key.Key == ConsoleKey.Escape)
                 {
                     CurrentPlayer = null;
+                    Console.Clear();
                     return;
+                    
                 }
 
                 if (key.Key == ConsoleKey.Enter)
@@ -151,7 +154,41 @@
 
         public static void SaveScore(int score)
         {
-            File.AppendAllText("scores.txt", $"{CurrentPlayer}:{score}\n");
+            string path = "scores.txt";
+
+            Dictionary<string, int> scores = new Dictionary<string, int>();
+
+            if (File.Exists(path))
+            {
+                foreach (var line in File.ReadAllLines(path))
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    var parts = line.Split(':');
+                    if (parts.Length == 2 && int.TryParse(parts[1], out int existingScore))
+                    {
+                        scores[parts[0]] = existingScore;
+                    }
+                }
+            }
+
+            if (CurrentPlayer != null)
+            {
+                if (scores.ContainsKey(CurrentPlayer))
+                {
+                    if (score > scores[CurrentPlayer])
+                    {
+                        scores[CurrentPlayer] = score;
+                    }
+                }
+                else
+                {
+                    scores[CurrentPlayer] = score;
+                }
+            }
+
+            var lines = scores.Select(s => $"{s.Key}:{s.Value}");
+            File.WriteAllLines(path, lines);
         }
 
         public static void ShowScores()
@@ -192,6 +229,7 @@
 
             Console.WriteLine("\nPress any key...");
             Console.ReadKey(true);
+            Console.Clear();
         }
 
         public static void ClearPlayers()
