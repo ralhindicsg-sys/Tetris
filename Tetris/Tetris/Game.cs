@@ -278,15 +278,24 @@ namespace Tetris
 
                 Thread.Sleep(10);
             }
-
             PlayerManager.SaveScore(score);
-            Console.Clear();
-            MainMenu();
+
+            bool restart = ShowGameOver();
+
+            if (restart)
+            {
+                StartGame();
+            }
+            else
+            {
+                Console.Clear();
+                MainMenu();
+            }
         }
 
         void HandleInput()
         {
-            long now = Environment.TickCount;
+            long now = Environment.TickCount64;
 
             while (Console.KeyAvailable)
             {
@@ -351,5 +360,110 @@ namespace Tetris
             x = Board.Width / 2 - 1;
             y = 0;
         }
+
+        bool ShowGameOver()
+        {
+            Console.Clear();
+
+            string[] GameOverLogo = {
+        " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ ",
+        "██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗",
+        "██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝",
+        "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗",
+        "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║",
+        " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝"
+    };
+            ConsoleColor[] colors = {
+                ConsoleColor.Red,
+                ConsoleColor.Yellow,
+                ConsoleColor.Green,
+                ConsoleColor.Cyan,
+                ConsoleColor.Magenta,
+                ConsoleColor.Blue
+            };
+
+            int width = Console.WindowWidth;
+            int height = Console.WindowHeight;
+            int startY = height / 2 - GameOverLogo.Length / 2;
+
+            
+            for (int i = 0; i < GameOverLogo.Length; i++)
+            {
+                int startX = (width - GameOverLogo[i].Length) / 2;
+                Console.SetCursorPosition(startX, startY + i);
+                Console.ForegroundColor = colors[i % colors.Length];
+                Console.Write(GameOverLogo[i]);
+            }
+
+            Console.ResetColor();
+
+            string playerText = $"Player: {PlayerManager.CurrentPlayer}";
+            string scoreText = $"Score: {score}";
+            string levelText = $"Level: {level}";
+
+            int infoY = startY + GameOverLogo.Length + 1;
+
+            Console.SetCursorPosition((width - playerText.Length) / 2, infoY);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(playerText);  
+            Console.ResetColor();
+
+            Console.SetCursorPosition((width - scoreText.Length) / 2, infoY + 1);
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write(scoreText);
+            Console.ResetColor();
+
+            Console.SetCursorPosition((width - levelText.Length) / 2, infoY + 2);
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.Write(levelText);
+
+            Console.ResetColor();
+
+            
+            string msg = "Press R to Restart or ESC to Exit";
+            int msgX = (width - msg.Length) / 2;
+            int msgY = infoY + 3;
+
+            bool visible = true;
+            Stopwatch timer = Stopwatch.StartNew();
+
+            while (true)
+            {
+                
+                if (Console.KeyAvailable)
+                {
+                    var key = Console.ReadKey(true).Key;
+
+                    if (key == ConsoleKey.R)
+                        return true;
+
+                    if (key == ConsoleKey.Escape)
+                        return false;
+                }
+
+                
+                if (timer.ElapsedMilliseconds >= 800)
+                {
+                    visible = !visible;
+                    timer.Restart();
+
+                    Console.SetCursorPosition(msgX, msgY);
+
+                    if (visible)
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(msg);
+                    }
+                    else
+                    {
+                        Console.Write(new string(' ', msg.Length));
+                    }
+
+                    Console.ResetColor();
+                }
+
+                Thread.Sleep(10); 
+            }
+        }
     }
-}
+} 

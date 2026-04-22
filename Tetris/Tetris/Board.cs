@@ -7,7 +7,7 @@ namespace Tetris
     internal class Board
     {
         public const int Width = 10;
-        public const int Height = 20;
+        public const int Height = 25;
 
         int[,] grid = new int[Height, Width];
         ConsoleColor[,] colors = new ConsoleColor[Height, Width];
